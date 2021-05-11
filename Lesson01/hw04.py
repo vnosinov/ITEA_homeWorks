@@ -6,31 +6,20 @@
 # ранее сумме и после этого завершить программу.
 
 
-# user_input = input('Числовой ряд:')
+all_sum = 0
+
+EXIT = True
+while EXIT:
+    s = input('Числовой ряд: ')
 
 
-# numbers_list = []
-#
-# num = ''
-# for symbol in user_input:
-#     if symbol.isdigit():
-#         num = num + symbol
-#     else:
-#         if num != '':
-#             numbers_list.append(input(num))
-#             num = ''
+    def sum_list(s):
+        global EXIT
+        word_list = s.split()
+        if "#" in word_list:
+            EXIT = False
+        num_list = [int(num) for num in filter(lambda num: num.isnumeric(), word_list)]
+        return sum(num_list)
 
-
-def summ_list(s):
-    word_list = s.split()
-    # print(word_list)
-    num_list = [int(num) for num in filter(lambda num: num.isnumeric(), word_list)]
-    return sum(num_list)
-
-
-# def summ_list(list):
-
-
-s = input('Числовой ряд: ')
-
-print(summ_list(s))
+    all_sum += sum_list(s)
+    print(all_sum)
