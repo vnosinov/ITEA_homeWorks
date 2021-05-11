@@ -9,6 +9,7 @@
 all_sum = 0
 
 EXIT = True
+print('Введите числовой ряд, символ для выхода"#"')
 while EXIT:
     s = input('Числовой ряд: ')
 
