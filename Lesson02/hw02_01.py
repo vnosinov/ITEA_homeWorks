@@ -18,10 +18,19 @@ class Car:
         return print(f'Текущая скорость {self.speed}')
 
 
-car1 = Car("Red", "Lada", False)
-car1.go_car(30)
-car1.go_car(40)
-car1.stop_car()
-car1.show_speed()
+class TownCar(Car):
+    pass
+
+
+class SportCar:
+    pass
+
+
+if __name__ == "__main__":
+    car1 = Car("Red", "Lada", False)
+    car1.go_car(30)
+    car1.go_car(40)
+    car1.stop_car()
+    car1.show_speed()
 
 
