@@ -15,3 +15,11 @@ def selecting_sum(a, b, c):
 
 
 print(selecting_sum(6, 1, 5))
+
+
+def sel_sum2(a, b, c):
+    my_list = [a, b, c]
+    return sum(my_list) - min(my_list)
+
+
+print(sel_sum2(6, 1, 5))
