@@ -9,14 +9,15 @@ def factorial_gen(n):
         i *= j
         yield i
 
+# def factorial(n):
+#     f = 1
+#     for i in range(1 ,n+1):
+#         f *= i
+#     return f
 
-def factorial(n):
-    f = 1
-    for i in range(1 ,n+1):
-        f *= i
-    return f
 
+d = factorial_gen(3)
+print(next(d))
+print(next(d))
+print(next(d))
 
-print(next(factorial_gen(3)))
-
-print(factorial(3))
