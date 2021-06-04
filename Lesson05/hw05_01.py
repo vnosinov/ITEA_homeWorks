@@ -1,5 +1,5 @@
 """Создать базу данных с названием order_service_db. Создать в ней несколько таблиц:
-
+Тавлица ЗАЯВКИ
 - id заявки (order_id) - целое число
 - дата создания (created_dt) - текст
 - дата обновления заявки (updated_dt) - текст
@@ -21,5 +21,37 @@
 
 Написать код создания таблиц на языке SQL, предусмотреть необходимые ограничения."""
 
+# SQL orders
+"""
+CREATE TABLE IF NOT EXISTS orders (
+order_id SERIAL PRIMARY KEY NOT NULL,
+created_dt DATE NOT NULL,
+updated_dt DATE NOT NULL,
+type_order TEXT NOT NULL,
+description TEXT NOT NULL,
+status TEXT NOT NULL,
+serial_number INTEGER NOT NULL,
+creator_id INTEGER NOT NULL,
+FOREIGN KEY (creator_id) REFERENCES employees (employee_id)
+);
+"""
 
-# Таблица заявки
+
+# SQL  departments
+"""
+CREATE TABLE IF NOT EXISTS departments (
+department_id SERIAL PRIMARY KEY,
+department_name TEXT NOT NULL,
+UNIQUE (department_name)
+);
+"""
+# SQL employees
+
+"""CREATE TABLE IF NOT EXISTS employees (
+employee_id SERIAL PRIMARY KEY,
+fio TEXT NOT NULL,
+position TEXT NOT NULL,
+department_id INTEGER NOT NULL,
+FOREIGN KEY (department_id) REFERENCES departments (department_id)
+ON DELETE CASCADE);
+"""
