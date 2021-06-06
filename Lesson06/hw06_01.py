@@ -17,10 +17,9 @@ from psycopg2 import sql
 from psycopg2 import Error
 
 
-def create_table(table_name, sql_script):
+def create_table(conn_name, table_name, sql_script):
     try:
-        conn = psycopg2.connect(user="postgres", password="dbpass", host="127.0.0.1", port="5432",
-                                database="order_service_db")
+        conn = conn_name
         cursor = conn.cursor()
         cursor.execute(sql_script)
         conn.commit()
@@ -28,6 +27,18 @@ def create_table(table_name, sql_script):
     except(Exception, Error) as error:
         print(error)
 
+
+def insert_data_in_table(conn_name, sql_script, data_into):
+    try:
+        with conn_name, conn_name.cursor() as cursor:
+            for data in data_into:
+                cursor.execute(sql_script, data)
+    except(Exception, Error) as error:
+        print(error)
+
+
+connect_db = psycopg2.connect(user="postgres", password="dbpass", host="127.0.0.1", port="5432",
+                              database="order_service_db")
 
 create_table_departments = sql.SQL("""
         CREATE TABLE IF NOT EXISTS departments (
@@ -61,7 +72,18 @@ create_table_orders = sql.SQL("""
 );
 """)
 
+data_departments = [('Тех. поддержка'),
+                    ('Бухгалтерия'),
+                    ('Администрация'),
+                    ('Продажа')]
 
-create_table("departments", create_table_departments)
-create_table("employees", create_table_employees)
-create_table("orders", create_table_orders)
+INSERT_QUERY_DEPARTMENTS = sql.SQL("""
+    INSERT INTO departments (department_name) VALUES (%s)
+""")
+
+
+create_table(connect_db, "departments", create_table_departments)
+create_table(connect_db, "employees", create_table_employees)
+create_table(connect_db, "orders", create_table_orders)
+
+insert_data_in_table(connect_db, INSERT_QUERY_DEPARTMENTS, data_departments)
