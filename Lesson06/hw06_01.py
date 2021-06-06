@@ -16,22 +16,52 @@ import psycopg2
 from psycopg2 import sql
 from psycopg2 import Error
 
-# conn = psycopg2.connect("postgres://postgres:dbpass@0.0.0.0:5432/postgres")
+
+def create_table(table_name, sql_script):
+    try:
+        conn = psycopg2.connect(user="postgres", password="dbpass", host="127.0.0.1", port="5432",
+                                database="order_service_db")
+        cursor = conn.cursor()
+        cursor.execute(sql_script)
+        conn.commit()
+        print(f'Таблица {table_name} создана ')
+    except(Exception, Error) as error:
+        print(error)
 
 
-conn = psycopg2.connect(user="postgres",
-                                  # пароль, который указали при установке PostgreSQL
-                                  password="dbpass",
-                                  host="127.0.0.1",
-                                  port="5432",
-                                  database="order_service_db")
-cursor = conn.cursor()
-try:
-    create_table_query_ = ''' 
-    
-    '''
+create_table_departments = sql.SQL("""
+        CREATE TABLE IF NOT EXISTS departments (
+        department_id SERIAL PRIMARY KEY,
+        department_name TEXT NOT NULL,
+        UNIQUE (department_name)
+        );
+""")
+
+create_table_employees = sql.SQL("""
+        CREATE TABLE IF NOT EXISTS employees (
+        employee_id SERIAL PRIMARY KEY,
+        fio TEXT NOT NULL,
+        position TEXT NOT NULL,
+        department_id INTEGER NOT NULL,
+        FOREIGN KEY (department_id) REFERENCES departments (department_id)
+        ON DELETE CASCADE);
+""")
+
+create_table_orders = sql.SQL("""
+    CREATE TABLE IF NOT EXISTS orders (
+    order_id SERIAL PRIMARY KEY NOT NULL,
+    created_dt DATE NOT NULL,
+    updated_dt DATE NOT NULL,
+    type_order TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT NOT NULL,
+    serial_number INTEGER NOT NULL,
+    creator_id INTEGER NOT NULL,
+    FOREIGN KEY (creator_id) REFERENCES employees (employee_id)
+);
+""")
 
 
-
-except (Exception, Error) as error:
-    print("Ошибка при работе с PostgreSQL", error)
+create_table("departments", create_table_departments)
+create_table("employees", create_table_employees)
+create_table("orders", create_table_orders)
