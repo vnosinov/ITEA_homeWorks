@@ -28,13 +28,13 @@ def create_table(conn_name, table_name, sql_script):
         print(error)
 
 
-def insert_data_in_table(conn_name, sql_script, data_into):
-    try:
-        with conn_name, conn_name.cursor() as cursor:
-            for data in data_into:
-                cursor.execute(sql_script, data)
-    except(Exception, Error) as error:
-        print(error)
+# def insert_data_in_table(conn_name, sql_script, data_into):
+#     try:
+#         with conn_name, conn_name.cursor() as cursor:
+#             for data in data_into:
+#                 cursor.execute(sql_script, data)
+#     except(Exception, Error) as error:
+#         print(error)
 
 
 connect_db = psycopg2.connect(user="postgres", password="dbpass", host="127.0.0.1", port="5432",
@@ -82,8 +82,18 @@ INSERT_QUERY_DEPARTMENTS = sql.SQL("""
 """)
 
 
-create_table(connect_db, "departments", create_table_departments)
-create_table(connect_db, "employees", create_table_employees)
-create_table(connect_db, "orders", create_table_orders)
+# create_table(connect_db, "departments", create_table_departments)
+# create_table(connect_db, "employees", create_table_employees)
+# create_table(connect_db, "orders", create_table_orders)
+#
+# insert_data_in_table(connect_db, INSERT_QUERY_DEPARTMENTS, (data_departments))
 
-insert_data_in_table(connect_db, INSERT_QUERY_DEPARTMENTS, data_departments)
+# with conn_name, conn_name.cursor() as cursor:
+# #             for data in data_into:
+# #                 cursor.execute(sql_script, data)
+#
+
+with connect_db:
+    with connect_db.cursor() as cursor:
+        for name in data_departments:
+            cursor.execute(INSERT_QUERY_DEPARTMENTS, name)
