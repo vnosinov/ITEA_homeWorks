@@ -46,6 +46,12 @@ def insert_in_tables(conn_name, sql_script, data_into):
         print(error)
 
 
+def get_data(conn_name, sql_script, ):
+    with conn_name, conn_name.cursor() as cursor:
+        cursor.execute(sql_script)
+        print(cursor.fetchall())
+
+
 connect_db = psycopg2.connect(user="postgres", password="dbpass", host="127.0.0.1", port="5432",
                               database="order_service_db")
 
@@ -121,11 +127,21 @@ INSERT_QUERY_ORDERS = sql.SQL("""
                         serial_number, creator_id) VALUES (%s, %s, %s, %s, %s, %s, %s)
 """)
 
+SELECT_QUERY_1 = sql.SQL("""
+    select  o.order_id, e.fio  from orders o
+    inner join employees e on creator_id = e.employee_id
+    where status = (%s) and created_dt = (%s) and creator_id = (%s); 
+""")
+
 # create_table(connect_db, "departments", create_table_departments)
 # create_table(connect_db, "employees", create_table_employees)
 # create_table(connect_db, "orders", create_table_orders)
 # #
 # insert_data_in_table(connect_db, INSERT_QUERY_DEPARTMENTS, data_departments)
 # insert_in_tables(connect_db, INSERT_QUERY_EMPLOYEES, data_employees)
-insert_in_tables(connect_db, INSERT_QUERY_ORDERS, data_orders)
+# insert_in_tables(connect_db, INSERT_QUERY_ORDERS, data_orders)
+# get_data(connect_db, SELECT_QUERY_1)
 
+with connect_db, connect_db.cursor() as cursor:
+    cursor.execute(SELECT_QUERY_1, ('done', '2021-03-02', 5))
+    print(cursor.fetchall())
