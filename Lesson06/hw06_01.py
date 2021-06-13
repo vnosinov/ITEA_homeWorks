@@ -46,9 +46,9 @@ def insert_in_tables(conn_name, sql_script, data_into):
         print(error)
 
 
-def get_data(conn_name, sql_script, ):
+def get_data_select(conn_name, sql_script, *args):
     with conn_name, conn_name.cursor() as cursor:
-        cursor.execute(sql_script)
+        cursor.execute(sql_script, *args)
         print(cursor.fetchall())
 
 
@@ -127,11 +127,24 @@ INSERT_QUERY_ORDERS = sql.SQL("""
                         serial_number, creator_id) VALUES (%s, %s, %s, %s, %s, %s, %s)
 """)
 
-SELECT_QUERY_1 = sql.SQL("""
+SELECT_QUERY_PARAMS1 = sql.SQL("""
     select  o.order_id, e.fio  from orders o
     inner join employees e on creator_id = e.employee_id
     where status = (%s) and created_dt = (%s) and creator_id = (%s); 
 """)
+
+params1 = ('done', '2021-03-02', 5)
+
+SELECT_QUERY_EMPLOYEES = sql.SQL("""
+    select d.department_name, e.fio from employees e
+    inner join departments d on e.department_id = d.department_id 
+""")
+
+SELECT_QUERY_PARAMS2 = sql.SQL("""
+   select o.status , o.created_dt  from orders o
+   where status = (%s);
+""")
+params2 = ('done',)
 
 # create_table(connect_db, "departments", create_table_departments)
 # create_table(connect_db, "employees", create_table_employees)
@@ -140,8 +153,8 @@ SELECT_QUERY_1 = sql.SQL("""
 # insert_data_in_table(connect_db, INSERT_QUERY_DEPARTMENTS, data_departments)
 # insert_in_tables(connect_db, INSERT_QUERY_EMPLOYEES, data_employees)
 # insert_in_tables(connect_db, INSERT_QUERY_ORDERS, data_orders)
-# get_data(connect_db, SELECT_QUERY_1)
+get_data_select(connect_db, SELECT_QUERY_PARAMS1, params1)
+get_data_select(connect_db, SELECT_QUERY_EMPLOYEES)
+get_data_select(connect_db, SELECT_QUERY_PARAMS2, params2)
 
-with connect_db, connect_db.cursor() as cursor:
-    cursor.execute(SELECT_QUERY_1, ('done', '2021-03-02', 5))
-    print(cursor.fetchall())
+
