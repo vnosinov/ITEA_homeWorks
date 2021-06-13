@@ -22,9 +22,29 @@ from abc import ABC, abstractmethod
 
 env = Env()
 
-DB_URL = env.str("MY_DB_URL", default="postgres://postgres:dbpass@0.0.0.0:5432/order_service_db")
+DB_URL = env.str("MY_DB_URL", default="postgres://postgres:dbpass@127.0.0.1:5432/order_service_db")
 print(DB_URL)
 
+connect = psycopg2.connect(DB_URL)
 
 
+class BaseModel(ABC):
+    @abstractmethod
+    def create_new_data(self, *args, **kwargs):
+        pass
 
+    @abstractmethod
+    def delete_data_by_id(self, *args, **kwargs):
+        pass
+
+
+class DataRequiredException(Exception):
+    def __init__(self, message, *args, **kwargs):
+        self.message = message
+        self.args = args
+        self.kwargs = kwargs
+
+
+class Orders(BaseModel):
+    def __init__(self, created_dt, updated_dt, type_order, description, status, serial_number, creator_id):
+      pass
