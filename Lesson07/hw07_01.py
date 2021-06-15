@@ -46,13 +46,14 @@ class DataRequiredException(Exception):
 
 
 class Orders(BaseModel):
-    INSERT_ORDERS = sql.SQL("""INSERT INTO orders (created_dt, order_type, description, status, serial_no, creator_id) 
+    INSERT_ORDERS = sql.SQL("""INSERT INTO orders (created_dt, updated_dt, order_type, description, 
+                status, serial_no, creator_id) 
                 VALUES (%s, %s, %s, %s, %s, %s) 
                 RETURNING order_id
                 """)
 
     def __init__(self, type_order, description, status, serial_number, creator_id, order_id=None):
-        self.created_dt = datetime.now()
+        self.created_dt = datetime.now().strftime('%Y-%m-%d')
         self.type_order = type_order
         self.description = description
         self.status = status
