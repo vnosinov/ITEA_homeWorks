@@ -16,7 +16,7 @@
 import psycopg2
 from psycopg2 import sql
 from psycopg2 import Error
-from datetime import date
+from datetime import datetime
 from envparse import Env
 from abc import ABC, abstractmethod
 
@@ -30,7 +30,7 @@ connect = psycopg2.connect(DB_URL)
 
 class BaseModel(ABC):
     @abstractmethod
-    def create_new_data(self, *args, **kwargs):
+    def insert_new_data(self, *args, **kwargs):
         pass
 
     @abstractmethod
@@ -46,5 +46,32 @@ class DataRequiredException(Exception):
 
 
 class Orders(BaseModel):
-    def __init__(self, created_dt, updated_dt, type_order, description, status, serial_number, creator_id):
-      pass
+    INSERT_ORDERS = sql.SQL("""INSERT INTO orders (created_dt, order_type, description, status, serial_no, creator_id) 
+                VALUES (%s, %s, %s, %s, %s, %s) 
+                RETURNING order_id
+                """)
+
+    def __init__(self, type_order, description, status, serial_number, creator_id, order_id=None):
+        self.created_dt = datetime.now()
+        self.type_order = type_order
+        self.description = description
+        self.status = status
+        self.serial_number = serial_number
+        self.creator_id = creator_id
+        self.order_id = order_id
+
+    def insert_new_data(self):
+        with connect, connect.cursor() as cursor:
+            cursor.execute(self.__class__.INSERT_ORDERS,
+                           (datetime.now(), datetime.now(), self.type_order, self.description,
+                            self.status, self.serial_number, self.creator_id))
+            order_id = cursor.fetchone()[0]
+            self.order_id = order_id
+        return {'order_id': order_id}
+
+    def delete_data_by_id(self, *args, **kwargs):
+        pass
+
+
+order1 = Orders('Support', 'Срочно', 'New', 10007, 5)
+order1.insert_new_data()
