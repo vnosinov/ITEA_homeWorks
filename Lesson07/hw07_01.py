@@ -45,12 +45,12 @@ class DataRequiredException(Exception):
         self.kwargs = kwargs
 
 
-class Orders(BaseModel):
-    INSERT_ORDERS = sql.SQL("""INSERT INTO orders (created_dt, updated_dt, type_order, description, status, 
+class Order(BaseModel):
+    INSERT_ORDER = sql.SQL("""INSERT INTO orders (created_dt, updated_dt, type_order, description, status, 
     serial_number, creator_id) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING order_id""")
 
     def __init__(self, type_order, description, status, serial_number, creator_id, order_id=None):
-        self.created_dt = datetime.now().strftime('%Y-%m-%d')
+        self.created_dt = datetime.now()
         self.type_order = type_order
         self.description = description
         self.status = status
@@ -58,11 +58,11 @@ class Orders(BaseModel):
         self.creator_id = creator_id
         self.order_id = order_id
 
-    @property
     def insert_new_data(self):
         with connect, connect.cursor() as cursor:
-            cursor.execute(self.__class__.INSERT_ORDERS,
-                           (datetime.now(), datetime.now(), self.type_order, self.description, self.status, self.serial_number, self.creator_id))
+            cursor.execute(self.__class__.INSERT_ORDER,
+                           (datetime.now(), datetime.now(), self.type_order, self.description, self.status,
+                            self.serial_number, self.creator_id))
             order_id = cursor.fetchone()[0]
             self.order_id = order_id
 
@@ -72,6 +72,5 @@ class Orders(BaseModel):
         pass
 
 
-order1 = Orders('Support', 'Срочно', 'New', 10007, 5)
+order1 = Order('Sale', 'Срочно', 'New', 10009, 10)
 order1.insert_new_data()
-c = 1
