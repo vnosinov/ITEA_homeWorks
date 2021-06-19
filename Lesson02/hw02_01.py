@@ -9,19 +9,19 @@ class Car:
 
     def go_car(self, speed):
         self.speed = speed
-        return print('Авто поехала')
+        return 'Авто поехала'
 
     def stop_car(self):
         self.speed = 0
-        return print(f'Скорость авто {self.speed}, авто остановлен')
+        return f'Скорость авто {self.speed}, авто остановлен'
 
     def show_speed(self):
-        return print(f'Текущая скорость {self.speed}')
+        return f'Текущая скорость {self.speed}'
 
     def turn_car(self, direction):
         self.direction = direction
         if self.speed != 0:
-            print(f'Машина едет {direction}')
+            return f'Машина едет {direction}'
         else:
             self.stop_car()
 
