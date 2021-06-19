@@ -48,12 +48,10 @@ class DataRequiredException(Exception):
 class Order(BaseModel):
     INSERT_ORDER = sql.SQL("""INSERT INTO orders (created_dt, updated_dt, type_order, description, status, 
     serial_number, creator_id) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING order_id""")
-    UPDATE_ORDER_STATUS = sql.SQL("""SELECT * FROM orders WHERE 
-    """)
 
-    def __init__(self, type_order, description, status, serial_number, creator_id, order_id=None, updated_dt=None):
+    def __init__(self, type_order, description, status, serial_number, creator_id, order_id=None):
         self.created_dt = datetime.now()
-        self.updated_dt = updated_dt
+        self.updated_dt = datetime.now()
         self.type_order = type_order
         self.description = description
         self.status = status
@@ -81,9 +79,6 @@ class Order(BaseModel):
 
         return {'order_id': order_id}
 
-    def delete_data_by_id(self, *args, **kwargs):
-        pass
-
     def get_order_id(self):
         return self.__order_id
 
@@ -94,28 +89,139 @@ class Order(BaseModel):
             cursor.execute(query, [value, datetime.now(), order_id])
 
     @staticmethod
-    def get_id(order_id):
-        queue = f"""SELECT order_id FROM orders WHERE order_id = %s"""
-        with connect, connect.cursor() as cursor:
-            i = cursor.execute(queue, [order_id])
-            print(i)
+    def update_creator(employee_id, order_id):
+        queue = f"""UPDATE orders SET creator_id = %s, updated_dt = %s WHERE order_id = %s"""
+        if Employees.check_id(employee_id):
+            with connect, connect.cursor() as cursor:
+                cursor.execute(queue, [employee_id, datetime.now(), order_id])
+        else:
+            raise DataRequiredException("the given id is missing in the database ")
 
     @staticmethod
-    def del_order_by_id(order_id):
-        queue = f"""DELETE FROM orders WHERE order_id = %s"""
-
+    def check_order_id(id):
+        queue = f"""SELECT order_id FROM orders WHERE order_id = %s"""
         with connect, connect.cursor() as cursor:
-            if not order_id:
-                raise DataRequiredException("Order_id param is required for deleting!")
+            cursor.execute(queue, [id])
+            data = cursor.fetchone()
+            if not data:
+                return False
             else:
-                cursor.execute(queue, [order_id], )
+                return True
+
+    @staticmethod
+    def delete_data_by_id(id):
+        queue = f"""DELETE FROM orders WHERE order_id = %s"""
+        if Order.check_order_id(id):
+            with connect, connect.cursor() as cursor:
+                cursor.execute(queue, [id], )
+        else:
+            raise DataRequiredException("the given id is missing in the database ")
 
 
-# order1 = Order()
+class Employees(BaseModel):
+    INSERT_EMPLOYEES = sql.SQL("""INSERT INTO employees (fio, position, department_id) 
+        VALUES (%s, %s, %s) RETURNING employee_id""")
+
+    def __init__(self, fio, position, department_id, employee_id=None):
+        self.fio = fio
+        self.position = position
+        self.department_id = department_id
+        self.employee_id = employee_id
+
+    def insert_new_data(self):
+        with connect, connect.cursor() as cursor:
+            cursor.execute(self.__class__.INSERT_EMPLOYEES,
+                           (self.fio, self.position, self.department_id))
+            employee_id = cursor.fetchone()[0]
+            self.employee_id = employee_id
+
+        return {'employee_id': employee_id}
+
+    @staticmethod
+    def check_id(id):
+        queue = f"""SELECT employee_id FROM employees WHERE employee_id = %s"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue, [id])
+            data = cursor.fetchone()
+            if not data:
+                return False
+            else:
+                return True
+
+    @staticmethod
+    def delete_data_by_id(id):
+        """
+        функция работает, но должна быть проверка на наличие заявок от удаленных пользователей
+        и либо реализовывать каскадное удаление заявок вместе с пользователем, либо менять структуру данных
+        ???
+        :param id:
+        :return:
+        """
+        # queue = f"""DELETE FROM employees WHERE employee_id = %s"""
+        # if Employees.check_id(id):
+        #     with connect, connect.cursor() as cursor:
+        #         cursor.execute(queue, [id], )
+        # else:
+        #     raise DataRequiredException("the given id is missing in the database ")
+        pass
+
+
+class Department(BaseModel):
+    INSERT_DEPARTMENT = sql.SQL("""INSERT INTO departments (department_name) 
+            VALUES (%s) RETURNING department_id""")
+
+    def __init__(self, department_name, department_id=None):
+        self.department_name = department_name
+        self.department_id = department_id
+
+    def insert_new_data(self):
+        with connect, connect.cursor() as cursor:
+            cursor.execute(self.__class__.INSERT_DEPARTMENT, (self.department_name,))
+            department_id = cursor.fetchone()[0]
+            self.department_id = department_id
+
+        return {'department_id': department_id}
+
+    def delete_data_by_id(id):
+        """тот же вопрос что и по пользователям"""
+        pass
+
+    @staticmethod
+    def check_id(id):
+        queue = f"""SELECT department_id FROM departments WHERE department_id = %s"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue, [id])
+            data = cursor.fetchone()
+            if not data:
+                return False
+            else:
+                return True
+
+    @staticmethod
+    def update_dep(name, id):
+        queue = f"""UPDATE departments SET department_name = %s WHERE department_id = %s"""
+        if Department.check_id(id):
+            with connect, connect.cursor() as cursor:
+                cursor.execute(queue, [name, id])
+        else:
+            raise DataRequiredException("the given id is missing in the database ")
+
+
+order1 = Order('business', 'Срочно', 'new', 10021, 7)
 # order1.insert_new_data()
 # Order.set_value('in_progress', 16, 'status')
-# Order.del_order_by_id(1)
-f1 = Order.get_id(1)
-f2 = Order.get_id(8)
+# Order.set_value('согласовано шефом', 16, 'description')
+# Order.delete_data_by_id(14)
+# Order.update_creator(12, 13)
 
-print(f1, f2)
+e1 = Employees('Петров Петр Петрович', 'Слесарь', 4)
+# e1.insert_new_data()
+# e1.delete_data_by_id(11)
+
+d1 = Department('Проектная')
+# d1.insert_new_data()
+Department.update_dep('Магазин', 4)
+
+
+
+
