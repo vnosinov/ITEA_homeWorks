@@ -51,10 +51,28 @@ class Notebook(Equipments):
 
 
 class Stockroom:
-    def __init__(self, equipment):
-        pass
+    def __init__(self, name):
+        self.name = name
+        self.to_stockroom = []
+
+    def add_to_stockroom(self, equipment):
+        self.to_stockroom.append(equipment)
+
+    def __iter__(self):
+        return iter(self.to_stockroom)
 
 
 n = Notebook('Asus', 'N700', 'QW2345', 'New')
+n1 = Notebook('Sony','i100', '3r34t43', 'б/у')
+
 print(n)
 n.sale_on()
+
+stock = Stockroom('Мой склад')
+stock.add_to_stockroom(n)
+stock.add_to_stockroom(n1)
+for equipment in stock:
+    print(equipment)
+
+
+
