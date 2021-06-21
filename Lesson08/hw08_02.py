@@ -56,16 +56,6 @@ class Order(BaseModel):
         self.creator_id = creator_id
         self.__order_id = order_id
 
-    # def __str__(self):
-    #     return f'order_id: {self.__order_id}\n' \
-    #            f'created_dt: {self.created_dt}\n' \
-    #            f'updated_dt: {self.updated_dt}\n' \
-    #            f'type_order: {self.type_order}\n' \
-    #            f'description: {self.description}\n' \
-    #            f'status: {self.status}\n' \
-    #            f'serial_number: {self.serial_number}\n' \
-    #            f'creator_id: {self.creator_id}\n'
-
     def insert_new_data(self):
         with connect, connect.cursor() as cursor:
             cursor.execute(self.__class__.INSERT_ORDER,
@@ -113,6 +103,34 @@ class Order(BaseModel):
                 cursor.execute(queue, [id], )
         else:
             raise DataRequiredException("the given id is missing in the database ")
+
+    def show(self):
+        return {"ID": self.__order_id, "created_dt": str(self.created_dt), "updated_dt": str(self.updated_dt),
+                "type_order": self.type_order, "description": self.description, "status": self.status,
+                "serial_number": self.serial_number, "creator_id": self.creator_id}
+
+    def __str__(self):
+        return f'order_id: {self.__order_id}\n' \
+               f'created_dt: {self.created_dt}\n' \
+               f'updated_dt: {self.updated_dt}\n' \
+               f'type_order: {self.type_order}\n' \
+               f'description: {self.description}\n' \
+               f'status: {self.status}\n' \
+               f'serial_number: {self.serial_number}\n' \
+               f'creator_id: {self.creator_id}'
+
+    def save_in_json(self):
+        if self.__order_id is None:
+            print("ID не может быть None")
+        else:
+            if not path.exists(f"Order_ID_{self.__order_id}.json"):
+                with open(f"Order_ID_{self.__order_id}.json", "x", encoding="utf-8") as f:
+                    f.write("{}")
+
+            with open(f"Order_ID_{self.__order_id}.json", "w") as f:
+                data = self.show()
+                data["Time of creation"] = f"{datetime.now()}"
+                f.write(json.dumps(data, indent=4))
 
 
 class Employees(BaseModel):
@@ -262,23 +280,23 @@ class Department(BaseModel):
                 f.write(json.dumps(data, indent=4))
 
 
-order1 = Order('business', 'Срочно', 'new', 10021, 7)
-# order1.insert_new_data()
+o1 = Order('business', 'Срочно', 'new', 10024, 8)
+o1.insert_new_data()
+# print(o1)
+o1.save_in_json()
 # Order.set_value('in_progress', 16, 'status')
 # Order.set_value('согласовано шефом', 16, 'description')
 # Order.delete_data_by_id(14)
 # Order.update_creator(12, 13)
 
-e1 = Employees('Сволочь Петр Петрович', 'Финансист', 8)
-e1.insert_new_data()
-print(e1)
-e1.save_in_json()
+# e1 = Employees('Сволочь Петр Петрович', 'Финансист', 8)
+# e1.insert_new_data()
+# print(e1)
+# e1.save_in_json()
 # e1.delete_data_by_id(11)
 
 
-
-
-d1 = Department('Финансисты')
+# d1 = Department('Финансисты')
 # d1.insert_new_data()
 # d1.save_in_json()
 # print(d1)
