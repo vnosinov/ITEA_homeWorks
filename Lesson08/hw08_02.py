@@ -11,10 +11,11 @@ json-файл с именем вида <id записи>.json. Если id не 
 
 import psycopg2
 from psycopg2 import sql
-from psycopg2 import Error
 from datetime import datetime
 from envparse import Env
 from abc import ABC, abstractmethod
+from os import path
+import json
 
 env = Env()
 
@@ -55,15 +56,15 @@ class Order(BaseModel):
         self.creator_id = creator_id
         self.__order_id = order_id
 
-    def __str__(self):
-        return f'order_id: {self.__order_id}\n' \
-               f'created_dt: {self.created_dt}\n' \
-               f'updated_dt: {self.updated_dt}\n' \
-               f'type_order: {self.type_order}\n' \
-               f'description: {self.description}\n' \
-               f'status: {self.status}\n' \
-               f'serial_number: {self.serial_number}\n' \
-               f'creator_id: {self.creator_id}\n'
+    # def __str__(self):
+    #     return f'order_id: {self.__order_id}\n' \
+    #            f'created_dt: {self.created_dt}\n' \
+    #            f'updated_dt: {self.updated_dt}\n' \
+    #            f'type_order: {self.type_order}\n' \
+    #            f'description: {self.description}\n' \
+    #            f'status: {self.status}\n' \
+    #            f'serial_number: {self.serial_number}\n' \
+    #            f'creator_id: {self.creator_id}\n'
 
     def insert_new_data(self):
         with connect, connect.cursor() as cursor:
@@ -161,6 +162,30 @@ class Employees(BaseModel):
         #     raise DataRequiredException("the given id is missing in the database ")
         pass
 
+    def show(self):
+        return {"ID": self.employee_id, "FIO": self.fio, "POSITION": self.position, "DEP_ID": self.department_id}
+
+    def __str__(self):
+        return f"ID: {self.department_id} NAME: {self.department_name} DEP_ID: {self.department_id}"
+
+    # def __repr__(self):
+    #     return f"ID('{self.department_id}') NAME('{self.department_name}')"
+
+    def save_in_json(self):
+        if self.department_id is None:
+            print("ID не может быть None")
+        else:
+            if not path.exists(f"dept_ID_{self.department_id}.json"):
+                with open(f"dept_ID_{self.department_id}.json", "x", encoding="utf-8") as f:
+                    f.write("{}")
+
+            with open(f"dept_ID_{self.department_id}.json", "w") as f:
+                data = self.show()
+                data["Time of creation"] = f"{datetime.now()}"
+                f.write(json.dumps(data, indent=4))
+
+
+
 
 class Department(BaseModel):
     INSERT_DEPARTMENT = sql.SQL("""INSERT INTO departments (department_name) 
@@ -183,7 +208,7 @@ class Department(BaseModel):
         pass
 
     @staticmethod
-    def show_data():
+    def show_all_data():
         data = Department.get_data()
         for x, y in data:
             print(f"ID: {x} NAME: {y}")
@@ -216,6 +241,28 @@ class Department(BaseModel):
         else:
             raise DataRequiredException("the given id is missing in the database ")
 
+    def show(self):
+        return {"ID": self.department_id, "NAME": self.department_name}
+
+    def __str__(self):
+        return f"ID: {self.department_id} NAME: {self.department_name}"
+
+    def __repr__(self):
+        return f"ID('{self.department_id}') NAME('{self.department_name}')"
+
+    def save_in_json(self):
+        if self.department_id is None:
+            print("ID не может быть None")
+        else:
+            if not path.exists(f"dept_ID_{self.department_id}.json"):
+                with open(f"dept_ID_{self.department_id}.json", "x", encoding="utf-8") as f:
+                    f.write("{}")
+
+            with open(f"dept_ID_{self.department_id}.json", "w") as f:
+                data = self.show()
+                data["Time of creation"] = f"{datetime.now()}"
+                f.write(json.dumps(data, indent=4))
+
 
 order1 = Order('business', 'Срочно', 'new', 10021, 7)
 # order1.insert_new_data()
@@ -228,10 +275,19 @@ e1 = Employees('Петров Петр Петрович', 'Слесарь', 4)
 # e1.insert_new_data()
 # e1.delete_data_by_id(11)
 
-d1 = Department('Проектная')
+
+
+
+d1 = Department('Финансисты')
+# d1.insert_new_data()
+# d1.save_in_json()
+# print(d1)
+
+# d1.save_in_json()
+
 # d1.insert_new_data()
 # Department.update_dep('Магазин', 4)
 # Department.get_data()
 
-# print(Department.get_data())
-Department.show_data()
+
+# Department.show_all_data()
