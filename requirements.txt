@@ -4,3 +4,4 @@ psycopg2-binary==2.8.6
 yoyo-migrations==7.3.2
 mongoengine==0.23.1
 envparse==0.2.0
+Flask-SQLAlchemy == 2.5.1
