@@ -166,25 +166,23 @@ class Employees(BaseModel):
         return {"ID": self.employee_id, "FIO": self.fio, "POSITION": self.position, "DEP_ID": self.department_id}
 
     def __str__(self):
-        return f"ID: {self.department_id} NAME: {self.department_name} DEP_ID: {self.department_id}"
+        return f"ID: {self.employee_id} FIO: {self.fio} POSITION: {self.position} DEP_ID: {self.department_id}"
 
     # def __repr__(self):
     #     return f"ID('{self.department_id}') NAME('{self.department_name}')"
 
     def save_in_json(self):
-        if self.department_id is None:
+        if self.employee_id is None:
             print("ID не может быть None")
         else:
-            if not path.exists(f"dept_ID_{self.department_id}.json"):
-                with open(f"dept_ID_{self.department_id}.json", "x", encoding="utf-8") as f:
+            if not path.exists(f"Emp_ID_{self.employee_id}.json"):
+                with open(f"Emp_ID_{self.employee_id}.json", "x", encoding="utf-8") as f:
                     f.write("{}")
 
-            with open(f"dept_ID_{self.department_id}.json", "w") as f:
+            with open(f"Emp_ID_{self.employee_id}.json", "w") as f:
                 data = self.show()
                 data["Time of creation"] = f"{datetime.now()}"
                 f.write(json.dumps(data, indent=4))
-
-
 
 
 class Department(BaseModel):
@@ -271,8 +269,10 @@ order1 = Order('business', 'Срочно', 'new', 10021, 7)
 # Order.delete_data_by_id(14)
 # Order.update_creator(12, 13)
 
-e1 = Employees('Петров Петр Петрович', 'Слесарь', 4)
-# e1.insert_new_data()
+e1 = Employees('Сволочь Петр Петрович', 'Финансист', 8)
+e1.insert_new_data()
+print(e1)
+e1.save_in_json()
 # e1.delete_data_by_id(11)
 
 
