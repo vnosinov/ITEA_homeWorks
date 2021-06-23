@@ -19,14 +19,14 @@ class Departments(me.Document):
     def __str__(self):
         return f"Departments: {self.department_name}"
 
-    def my_save(self, *args, **kwargs):
-        return self.save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)
 
-    def my_update(self, **kwargs):
-        return self.update(**kwargs)
+    def update(self, **kwargs):
+        return super().update(**kwargs)
 
-    def my_del(self, *args, **kwargs):
-        self.delete(*args, **kwargs)
+    def delete(self, **kwargs):
+        super().delete(**kwargs)
 
 
 class Employees(me.Document):
@@ -38,14 +38,14 @@ class Employees(me.Document):
     def __str__(self):
         return f" Employees_id: {self.employees_id}  FIO: {self.fio}  Position: {self.position}"
 
-    def my_save(self, *args, **kwargs):
-        return self.save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)
 
-    def my_update(self, **kwargs):
-        return self.update(**kwargs)
+    def update(self, **kwargs):
+        return super().update(**kwargs)
 
-    def my_del(self, *args, **kwargs):
-        self.delete(*args, **kwargs)
+    def delete(self, **kwargs):
+        super().delete(**kwargs)
 
 
 class Order(me.Document):
@@ -67,15 +67,16 @@ class Order(me.Document):
                f"serial_number: {self.serial_number} "\
                f"creator_id: {self.creator_id}"
 
-    def my_save(self, *args, **kwargs):
-        return self.save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.created_dt = datetime.now()
+        return super().save(*args, **kwargs)
 
-    def my_update(self, **kwargs):
+    def update(self, **kwargs):
         self.updated_dt = datetime.now()
-        return self.update(**kwargs)
+        return super().update(**kwargs, updated_dt=self.updated_dt)
 
-    def my_del(self, *args, **kwargs):
-        self.delete(*args, **kwargs)
+    def delete(self, **kwargs):
+        super().delete(**kwargs)
 
 
 departments_list = [
@@ -96,13 +97,19 @@ departments_list = [
 # for dept in departments_list:
 #     my_id = dept['department_id']
 #     dept_name = dept['department_name']
-#     Departments(department_id=my_id, department_name=dept_name).my_save()
+#     Departments(department_id=my_id, department_name=dept_name).save()
+# d1 = Departments(department_id=1, department_name="fggg")
+# d1.save()
+#
+obj = Departments.objects.get(id='60d38ce06d2f4e8f1a9bad03')
+obj.delete()
+# Departments.objects.all().delete()
 
 
 # e1 = Employees(employees_id=1, fio='Иванов Иван Иванович', position='Инженер', departments=1)
 # e1.my_save()
 
-o1 = Order(created_dt=datetime.now(), type_order='Support', description='Срочно',
-           status='new', serial_number='100001', creator_id='1')
-o1.my_save()
-print(o1)
+# o1 = Order(created_dt=datetime.now(), type_order='Support', description='Срочно',
+#            status='new', serial_number='100001', creator_id='1')
+# o1.my_save()
+# print(o1)
