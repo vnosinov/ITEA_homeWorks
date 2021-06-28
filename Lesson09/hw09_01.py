@@ -20,10 +20,10 @@ class Departments(me.Document):
         return f"Departments: {self.department_name}"
 
     def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
+        return self.save(*args, **kwargs)
 
     def update(self, **kwargs):
-        return super().update(**kwargs)
+        return self.update(**kwargs)
 
     def delete(self, **kwargs):
         super().delete(**kwargs)
@@ -39,10 +39,10 @@ class Employees(me.Document):
         return f" Employees_id: {self.employees_id}  FIO: {self.fio}  Position: {self.position}"
 
     def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
+        return self.save(*args, **kwargs)
 
     def update(self, **kwargs):
-        return super().update(**kwargs)
+        return self.update(**kwargs)
 
     def delete(self, **kwargs):
         super().delete(**kwargs)
