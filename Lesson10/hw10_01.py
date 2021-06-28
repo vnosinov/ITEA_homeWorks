@@ -145,6 +145,14 @@ class Employees(BaseModel):
         return {'employee_id': employee_id}
 
     @staticmethod
+    def get_data():
+        queue = f"""SELECT fio, position, department_id FROM employees"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue)
+            data = cursor.fetchall()
+        return data
+
+    @staticmethod
     def check_id(id):
         queue = f"""SELECT employee_id FROM employees WHERE employee_id = %s"""
         with connect, connect.cursor() as cursor:
