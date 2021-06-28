@@ -15,9 +15,18 @@ def get_departments():
     return render_template('index.html', name=name, params=dep_list)
 
 
-@app.route('/employees/get_data', method=['GET'])
+@app.route('/employees/get_data/', methods=['GET'])
 def get_employees():
     name = 'Сотрудники'
+    emp_list = Employees.get_data()
+    return render_template('index.html', name=name, params=emp_list)
+
+
+@app.route('/order/get_data/', methods=['GET'])
+def get_order():
+    name = 'Заявки'
+    order_list = Order.get_data()
+    return render_template('index.html', name=name, params=order_list)
 
 
 if __name__ == '__main__':
