@@ -1,5 +1,14 @@
 """
-Классы и методы для работы с БД
+Продолжаем работу над нашей CRM. Теперь нужно реализовать несколько web-ручек для управления нашей системой:
+
+    создание департамента, заявки, сотрудника
+    редактирование информации о департаменте, заявке сотруднике
+    удаление данных о заявке, департаменте и сотруднике
+    поиск по id/дате/любому другому параметру (на ваш выбор) департамента, сотрудника, зявки
+
+
+
+Для выполнения ДЗ можно использовать интеграцию с любой изученной БД (sqlite, Postgresql, Mongo)
 """
 import psycopg2
 from psycopg2 import sql
@@ -217,7 +226,7 @@ class Department(BaseModel):
     INSERT_DEPARTMENT = sql.SQL("""INSERT INTO departments (department_name) 
             VALUES (%s) RETURNING department_id""")
 
-    def __init__(self, department_name, department_id=None):
+    def __init__(self, department_name, department_id=None) -> object:
         self.department_name = department_name
         self.department_id = department_id
 
@@ -229,9 +238,11 @@ class Department(BaseModel):
 
         return {'department_id': department_id}
 
+    @staticmethod
     def delete_data_by_id(id):
-        """тот же вопрос что и по пользователям"""
-        pass
+        queue = f"""DELETE FROM departments WHERE department_id = %s"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue, [id])
 
     @staticmethod
     def show_all_data():
@@ -292,3 +303,6 @@ class Department(BaseModel):
 #
 # e1 = Employees.get_data()
 # print(e1)
+Department.delete_data_by_id(9)
+
+
