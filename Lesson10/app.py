@@ -16,14 +16,14 @@ def get_departments():
     return render_template('index.html', name=name, params=dep_list)
 
 
-@app.route('/dep_del/', methods=['POST'])
+@app.route('/dep_del/', methods=['DELETE'])
 def dep_del():
-    id = request.args.get('id')
+    id_ = request.args.get('id')
     try:
-        Department.delete_data_by_id(id)
+        Department.delete_data_by_id(id_)
     except Exception as e:
         print(e)
-    return "Отдел удален"
+    return f"Удален отдел c id {id_}"
 
 
 @app.route('/dep_new/', methods=['POST'])
@@ -34,7 +34,26 @@ def dep_new():
         d.insert_new_data()
     except Exception as e:
         print(e)
-    return "Новый отдел добавлен"
+    return f"Добавлен новый отдел{name}"
+
+
+@app.route('/dep_update/', methods=['POST'])
+def dep_update():
+    id_ = request.args.get('id')
+    name = request.args.get('name')
+    try:
+        Department.update_dep(name, id_)
+    except Exception as e:
+        print(e)
+    return f'Новое название отдела "{name}"'
+
+
+@app.route('/dep_get_by_id/', methods=['GET'])
+def dep_get_by_id():
+    id_ = request.args.get('id')
+    name = 'Отдел'
+    dep_name = Department.get_data_by_id(id_)
+    return render_template('index1.html', name=name, param=dep_name)
 
 
 @app.route('/employees/get_data/', methods=['GET'])

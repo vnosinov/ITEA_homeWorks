@@ -259,10 +259,18 @@ class Department(BaseModel):
         return data
 
     @staticmethod
-    def check_id(id):
+    def get_data_by_id(id_):
+        queue = f"""SELECT department_name FROM departments WHERE department_id = %s"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue, [id_])
+            data = cursor.fetchone()
+        return data
+
+    @staticmethod
+    def check_id(id_):
         queue = f"""SELECT department_id FROM departments WHERE department_id = %s"""
         with connect, connect.cursor() as cursor:
-            cursor.execute(queue, [id])
+            cursor.execute(queue, [id_])
             data = cursor.fetchone()
             if not data:
                 return False
@@ -270,11 +278,11 @@ class Department(BaseModel):
                 return True
 
     @staticmethod
-    def update_dep(name, id):
+    def update_dep(name, id_):
         queue = f"""UPDATE departments SET department_name = %s WHERE department_id = %s"""
-        if Department.check_id(id):
+        if Department.check_id(id_):
             with connect, connect.cursor() as cursor:
-                cursor.execute(queue, [name, id])
+                cursor.execute(queue, [name, id_])
         else:
             raise DataRequiredException("the given id is missing in the database ")
 
@@ -300,9 +308,7 @@ class Department(BaseModel):
                 data["Time of creation"] = f"{datetime.now()}"
                 f.write(json.dumps(data, indent=4))
 
-#
-# e1 = Employees.get_data()
-# print(e1)
-Department.delete_data_by_id(9)
+
+
 
 
