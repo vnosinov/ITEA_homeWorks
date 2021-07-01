@@ -172,6 +172,14 @@ class Employees(BaseModel):
         return data
 
     @staticmethod
+    def get_by_id(id_):
+        queue = f"""SELECT fio, position, department_id FROM employees WHERE employee_id = %s"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue, [id_])
+            data = cursor.fetchone()
+        return data
+
+    @staticmethod
     def check_id(id):
         queue = f"""SELECT employee_id FROM employees WHERE employee_id = %s"""
         with connect, connect.cursor() as cursor:
@@ -191,13 +199,12 @@ class Employees(BaseModel):
         :param id:
         :return:
         """
-        # queue = f"""DELETE FROM employees WHERE employee_id = %s"""
-        # if Employees.check_id(id):
-        #     with connect, connect.cursor() as cursor:
-        #         cursor.execute(queue, [id], )
-        # else:
-        #     raise DataRequiredException("the given id is missing in the database ")
-        pass
+        queue = f"""DELETE FROM employees WHERE employee_id = %s"""
+        if Employees.check_id(id):
+            with connect, connect.cursor() as cursor:
+                cursor.execute(queue, [id],)
+        else:
+            raise DataRequiredException("the given id is missing in the database ")
 
     def show(self):
         return {"ID": self.employee_id, "FIO": self.fio, "POSITION": self.position, "DEP_ID": self.department_id}
@@ -235,7 +242,6 @@ class Department(BaseModel):
             cursor.execute(self.__class__.INSERT_DEPARTMENT, (self.department_name,))
             department_id = cursor.fetchone()[0]
             self.department_id = department_id
-
         return {'department_id': department_id}
 
     @staticmethod

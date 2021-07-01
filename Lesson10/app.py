@@ -63,11 +63,44 @@ def get_employees():
     return render_template('index.html', name=name, params=emp_list)
 
 
+@app.route('/employees/get_by_id/', methods=['GET'])
+def emp_get_by_id():
+    name = 'Сотрудник'
+    id_ = request.args.get('id')
+    emp = Employees.get_by_id(id_)
+    return render_template('index1.html', name=name, param=emp)
+
+
+@app.route('/employees/del_by_id/', methods=['DELETE'])
+def emp_del_by_id():
+    id_ = request.args.get('id')
+    try:
+        Employees.delete_data_by_id(id_)
+    except Exception as e:
+        print(e)
+    return f"Удален сотрудник c id {id_}"
+
+
+@app.route('/emp_new/', methods=['POST'])
+def emp_new():
+    fio = request.args.get('fio')
+    position = request.args.get('position')
+    department_id = request.args.get('department_id')
+    try:
+        emp = Employees(fio, position, department_id)
+        emp.insert_new_data()
+    except Exception as e:
+        print(e)
+    return f"Добавлен сотрудник {fio}"
+
+
 @app.route('/order/get_data/', methods=['GET'])
 def get_order():
     name = 'Заявки'
     order_list = Order.get_data()
     return render_template('index.html', name=name, params=order_list)
+
+
 
 
 if __name__ == '__main__':
