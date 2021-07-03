@@ -101,6 +101,20 @@ def get_order():
     return render_template('index.html', name=name, params=order_list)
 
 
+@app.route('/order/new/', methods=['POST'])
+def ord_new():
+
+    type_order = request.args.get('type_order')
+    description = request.args.get('description')
+    status = request.args.get('status')
+    serial_number = request.args.get('serial_number')
+    creator_id = request.args.get('creator_id')
+    try:
+        order = Order(type_order, description, status, serial_number,creator_id)
+        order.insert_new_data()
+    except Exception as e:
+        print(e)
+    return f"Новая заявка"
 
 
 if __name__ == '__main__':
