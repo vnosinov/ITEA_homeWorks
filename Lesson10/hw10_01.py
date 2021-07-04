@@ -96,6 +96,16 @@ class Order(BaseModel):
         return data
 
     @staticmethod
+    def get_order_by_id(_id):
+        queue = f"""SELECT created_dt, updated_dt, type_order, description, status,
+                serial_number, creator_id 
+                FROM orders WHERE order_id = %s"""
+        with connect, connect.cursor() as cursor:
+            cursor.execute(queue, [_id])
+            data = cursor.fetchone()
+        return data
+
+    @staticmethod
     def check_order_id(id):
         queue = f"""SELECT order_id FROM orders WHERE order_id = %s"""
         with connect, connect.cursor() as cursor:

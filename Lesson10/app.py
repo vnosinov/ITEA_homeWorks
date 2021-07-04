@@ -117,5 +117,23 @@ def ord_new():
     return f"Новая заявка"
 
 
+@app.route('/order/del/', methods=['DELETE'])
+def ord_del():
+    id_ = request.args.get('id')
+    try:
+        Order.delete_data_by_id(id_)
+    except Exception as e:
+        print(e)
+    return f"Удалена заявка id {id_}"
+
+
+@app.route('/order/find/param/', methods=['GET'])
+def ord_find_by_param():
+    name = 'Заявка'
+    _id = request.args.get('id')
+    order = Order.get_order_by_id(_id)
+    return render_template('index1.html', name=name, param=order)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
