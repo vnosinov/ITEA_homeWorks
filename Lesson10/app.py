@@ -135,5 +135,19 @@ def ord_find_by_param():
     return render_template('index1.html', name=name, param=order)
 
 
+@app.route('/order/status_update/', methods=['POST'])
+def ord_status_update():
+    name = 'Заявка'
+    _id = request.args.get('id')
+    colums = 'status'
+    status = request.args.get('status')
+
+    try:
+        Order.set_value(status, _id, colums)
+    except Exception as e:
+        print(e)
+    return f'Заявка id = {_id} новый статус "{status}"'
+
+
 if __name__ == '__main__':
     app.run(debug=True)
