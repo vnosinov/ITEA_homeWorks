@@ -18,6 +18,8 @@ from abc import ABC, abstractmethod
 from os import path
 import json
 
+from psycopg2.sql import SQL
+
 env = Env()
 
 DB_URL = env.str("MY_DB_URL", default="postgres://postgres:dbpass@127.0.0.1:5432/order_service_db")
@@ -156,7 +158,8 @@ class Order(BaseModel):
 
 class Employees(BaseModel):
     INSERT_EMPLOYEES = sql.SQL("""INSERT INTO employees (fio, position, department_id) 
-        VALUES (%s, %s, %s) RETURNING employee_id""")
+            VALUES (%s, %s, %s) RETURNING employee_id""")
+    # DELETE_EMPLOYEES = sql.SQL("""DELETE FROM employees WHERE employee_id = %s""")
 
     def __init__(self, fio, position, department_id, employee_id=None):
         self.fio = fio
@@ -202,13 +205,7 @@ class Employees(BaseModel):
 
     @staticmethod
     def delete_data_by_id(id):
-        """
-        функция работает, но должна быть проверка на наличие заявок от удаленных пользователей
-        и либо реализовывать каскадное удаление заявок вместе с пользователем, либо менять структуру данных
-        ???
-        :param id:
-        :return:
-        """
+
         queue = f"""DELETE FROM employees WHERE employee_id = %s"""
         if Employees.check_id(id):
             with connect, connect.cursor() as cursor:
@@ -221,9 +218,6 @@ class Employees(BaseModel):
 
     def __str__(self):
         return f"ID: {self.employee_id} FIO: {self.fio} POSITION: {self.position} DEP_ID: {self.department_id}"
-
-    # def __repr__(self):
-    #     return f"ID('{self.department_id}') NAME('{self.department_name}')"
 
     def save_in_json(self):
         if self.employee_id is None:
@@ -323,8 +317,6 @@ class Department(BaseModel):
                 data = self.show()
                 data["Time of creation"] = f"{datetime.now()}"
                 f.write(json.dumps(data, indent=4))
-
-
 
 
 

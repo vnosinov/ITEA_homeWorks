@@ -18,20 +18,19 @@ def get_departments():
 
 @app.route('/dep_del/', methods=['DELETE'])
 def dep_del():
-    id_ = request.args.get('id')
+    dep_id = request.args.get('id')
     try:
-        Department.delete_data_by_id(id_)
+        Department.delete_data_by_id(dep_id)
     except Exception as e:
         print(e)
-    return f"Удален отдел c id {id_}"
+    return f"Удален отдел c id {dep_id}"
 
 
 @app.route('/dep_new/', methods=['POST'])
 def dep_new():
     name = request.args.get('name')
     try:
-        d = Department(name)
-        d.insert_new_data()
+        Department(name).insert_new_data()
     except Exception as e:
         print(e)
     return f"Добавлен новый отдел{name}"
@@ -39,10 +38,10 @@ def dep_new():
 
 @app.route('/dep_update/', methods=['POST'])
 def dep_update():
-    id_ = request.args.get('id')
+    dep_id = request.args.get('id')
     name = request.args.get('name')
     try:
-        Department.update_dep(name, id_)
+        Department.update_dep(name, dep_id)
     except Exception as e:
         print(e)
     return f'Новое название отдела "{name}"'
@@ -50,9 +49,9 @@ def dep_update():
 
 @app.route('/dep_get_by_id/', methods=['GET'])
 def dep_get_by_id():
-    id_ = request.args.get('id')
+    dep_id = request.args.get('id')
     name = 'Отдел'
-    dep_name = Department.get_data_by_id(id_)
+    dep_name = Department.get_data_by_id(dep_id)
     return render_template('index1.html', name=name, param=dep_name)
 
 
@@ -66,19 +65,19 @@ def get_employees():
 @app.route('/employees/get_by_id/', methods=['GET'])
 def emp_get_by_id():
     name = 'Сотрудник'
-    id_ = request.args.get('id')
-    emp = Employees.get_by_id(id_)
+    emp_id = request.args.get('id')
+    emp = Employees.get_by_id(emp_id)
     return render_template('index1.html', name=name, param=emp)
 
 
 @app.route('/employees/del_by_id/', methods=['DELETE'])
 def emp_del_by_id():
-    id_ = request.args.get('id')
+    emp_id = request.args.get('id')
     try:
-        Employees.delete_data_by_id(id_)
+        Employees.delete_data_by_id(emp_id)
     except Exception as e:
         print(e)
-    return f"Удален сотрудник c id {id_}"
+    return f"Удален сотрудник c id {emp_id}"
 
 
 @app.route('/emp_new/', methods=['POST'])
@@ -87,8 +86,7 @@ def emp_new():
     position = request.args.get('position')
     department_id = request.args.get('department_id')
     try:
-        emp = Employees(fio, position, department_id)
-        emp.insert_new_data()
+        Employees(fio, position, department_id).insert_new_data()
     except Exception as e:
         print(e)
     return f"Добавлен сотрудник {fio}"
@@ -103,15 +101,13 @@ def get_order():
 
 @app.route('/order/new/', methods=['POST'])
 def ord_new():
-
     type_order = request.args.get('type_order')
     description = request.args.get('description')
     status = request.args.get('status')
     serial_number = request.args.get('serial_number')
     creator_id = request.args.get('creator_id')
     try:
-        order = Order(type_order, description, status, serial_number,creator_id)
-        order.insert_new_data()
+        Order(type_order, description, status, serial_number, creator_id).insert_new_data()
     except Exception as e:
         print(e)
     return f"Новая заявка"
@@ -119,34 +115,33 @@ def ord_new():
 
 @app.route('/order/del/', methods=['DELETE'])
 def ord_del():
-    id_ = request.args.get('id')
+    ord_id = request.args.get('id')
     try:
-        Order.delete_data_by_id(id_)
+        Order.delete_data_by_id(ord_id)
     except Exception as e:
         print(e)
-    return f"Удалена заявка id {id_}"
+    return f"Удалена заявка id {ord_id}"
 
 
 @app.route('/order/find/param/', methods=['GET'])
 def ord_find_by_param():
     name = 'Заявка'
-    _id = request.args.get('id')
-    order = Order.get_order_by_id(_id)
+    ord_id = request.args.get('id')
+    order = Order.get_order_by_id(ord_id)
     return render_template('index1.html', name=name, param=order)
 
 
 @app.route('/order/status_update/', methods=['POST'])
 def ord_status_update():
-    name = 'Заявка'
-    _id = request.args.get('id')
+    ord_id = request.args.get('id')
     colums = 'status'
     status = request.args.get('status')
 
     try:
-        Order.set_value(status, _id, colums)
+        Order.set_value(status, ord_id, colums)
     except Exception as e:
         print(e)
-    return f'Заявка id = {_id} новый статус "{status}"'
+    return f'Заявка id = {ord_id} новый статус "{status}"'
 
 
 if __name__ == '__main__':
